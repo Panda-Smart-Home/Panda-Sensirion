@@ -6,6 +6,8 @@ require("ap")
 dofile("routes.lua")
 -- set wifi mode
 wifi.setmode(wifi.STATIONAP)
+-- set egc mode
+node.egc.setmode(node.egc.ALWAYS, 4096)
 
 --set timer id and ms for each moudle
 tmr_tab = {}

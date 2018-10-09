@@ -30,7 +30,15 @@ local function tryFileResponse(uri)
     -- return file content
     local content = helper.getFile(filename)
     if content ~= nil then
-        return helper.okResponse(content)
+        -- for css or js file
+        local type = "text/html"
+        if filename:find(".css") ~= nil then
+            type = "text/css"
+        elseif filename:find(".js") ~= nil then
+            type = "application/javascript"
+        end
+
+        return helper.okResponse(content, type)
     end
     -- error response
     helper.log("file not found or can not read:" .. filename)
@@ -52,10 +60,6 @@ local function routing(method, uri, headers, body)
     return helper.notFoundResponse()
 end
 
-local function sendResponse(conn, response)
-    conn:send(response, function (c) c:close() end)
-end
-
 local onReceive = function(conn, playload)
 
     local method  = nil
@@ -67,7 +71,7 @@ local onReceive = function(conn, playload)
     local headers_end = playload:find("\r\n\r\n")
 
     if request_end == nil or headers_end == nil then
-        sendResponse(conn, helper.badRequestResponse)
+        conn:send(helper.badRequestResponse, function (c) c:close() end)
         return nil
     end
 
@@ -78,7 +82,7 @@ local onReceive = function(conn, playload)
     playload = nil
 
     method, uri, version = request:match("([^%s]+) ([^%s]+) ([^%s]+)")
-
+    -- get header value to headers_table
     for line in headers:gmatch("(.-)\r\n") do
         local key
         local val
@@ -89,10 +93,8 @@ local onReceive = function(conn, playload)
     end
     -- free headers
     headers = nil
-
-    response = routing(method, uri, headers_table, body)
-
-    sendResponse(conn, response)
+    -- send response from routing
+    conn:send(routing(method, uri, headers_table, body), function (c) c:close() end)
 end
 
 function webserver.start()

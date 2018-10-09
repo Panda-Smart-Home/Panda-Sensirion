@@ -29,6 +29,6 @@ webserver.addRoute("POST", "/login",
             return helper.redirectResponse("http://192.168.1.1/", cookie)
         end
 
-        return helper.redirectResponse("http://192.168.1.1/login.html")
+        return helper.redirectResponse("http://192.168.1.1/login.html?status=fail")
     end
 )

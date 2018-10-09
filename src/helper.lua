@@ -8,8 +8,8 @@ function helper.getFile(filename)
         local fd = file.open(filename, "r")
         if fd then
             -- read the file content
-            -- max 8192 bytes
-            content = fd:read(8192)
+            -- max 4096 bytes
+            content = fd:read(4096)
             -- close file
             fd:close();fd = nil
         end
@@ -27,8 +27,8 @@ function helper.getConfig(from_file)
     local fd = file.open("config.json", "r")
     if fd then
         -- read the config file content
-        -- max 8192 bytes
-        local config = fd:read(8192)
+        -- max 4096 bytes
+        local config = fd:read(4096)
         -- close file
         fd:close();fd = nil
         -- decode the json content to table and return
@@ -69,7 +69,7 @@ function helper.log(...)
                 print(k, v)
             end
         else
-            print(info)
+            print("mem: " .. tostring(node.heap()) .. " | " .. info)
         end
     end
 end
@@ -106,7 +106,7 @@ function helper.okResponse(body, content_type, cookie)
         cookie = ""
     end
     body = body or "OK"
-    local response = "HTTP/1.1 200 OK\r\nContent-Type: %s%s\r\n\r\n%s"
+    local response = "HTTP/1.0 200 OK\r\nContent-Type: %s%s\r\n\r\n%s"
     response = string.format(response, content_type, cookie, body)
     return response
 end
@@ -117,17 +117,17 @@ function helper.redirectResponse(url, cookie)
     else
         cookie = ""
     end
-    local response = "HTTP/1.1 301 Moved Permanently\r\nLocation: %s%s\r\n\r\n"
+    local response = "HTTP/1.0 301 Moved Permanently\r\nLocation: %s%s\r\n\r\n"
     response = string.format(response, url, cookie)
     return response
 end
 
 function helper.badRequestResponse()
-    return "HTTP/1.1 400 Bad Request\r\n\r\n<h1>400 Bad Request!</h1>"
+    return "HTTP/1.0 400 Bad Request\r\n\r\n<h1>400 Bad Request!</h1>"
 end
 
 function helper.notFoundResponse()
-    return "HTTP/1.1 404 Not Found\r\n\r\n<h1>404 Not Found!</h1>"
+    return "HTTP/1.0 404 Not Found\r\n\r\n<h1>404 Not Found!</h1>"
 end
 
 return helper

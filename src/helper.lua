@@ -106,10 +106,7 @@ function helper.okResponse(body, content_type, cookie)
         cookie = ""
     end
     body = body or "OK"
-    local response = [[HTTP/1.1 200 OK
-Content-Type: %s%s
-
-%s]]
+    local response = "HTTP/1.1 200 OK\r\nContent-Type: %s%s\r\n\r\n%s"
     response = string.format(response, content_type, cookie, body)
     return response
 end
@@ -120,26 +117,17 @@ function helper.redirectResponse(url, cookie)
     else
         cookie = ""
     end
-    local response = [[HTTP/1.1 301 Moved Permanently
-Location: %s%s
-
-]]
+    local response = "HTTP/1.1 301 Moved Permanently\r\nLocation: %s%s\r\n\r\n"
     response = string.format(response, url, cookie)
     return response
 end
 
 function helper.badRequestResponse()
-    return [[HTTP/1.1 400 Bad Request
-
-<h1>400 Bad Request!</h1>
-]]
+    return "HTTP/1.1 400 Bad Request\r\n\r\n<h1>400 Bad Request!</h1>"
 end
 
 function helper.notFoundResponse()
-    return [[HTTP/1.1 404 Not Found
-
-<h1>404 Not Found!</h1>
-]]
+    return "HTTP/1.1 404 Not Found\r\n\r\n<h1>404 Not Found!</h1>"
 end
 
 return helper

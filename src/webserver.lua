@@ -33,7 +33,7 @@ local function tryFileResponse(uri)
         return helper.okResponse(content)
     end
     -- error response
-    helper.log("file not found or can't read:" .. filename)
+    helper.log("file not found or can not read:" .. filename)
     return helper.notFoundResponse()
 end
 

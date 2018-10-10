@@ -2,21 +2,6 @@ helper = {}
 
 local config = nil
 
-function helper.getFile(filename)
-    local content = nil
-    if file.exists(filename) then
-        local fd = file.open(filename, "r")
-        if fd then
-            -- read the file content
-            -- max 4096 bytes
-            content = fd:read(4096)
-            -- close file
-            fd:close();fd = nil
-        end
-    end
-    return content
-end
-
 function helper.getConfig(from_file)
     from_file = from_file or false
 
@@ -81,7 +66,7 @@ function helper.isLogin(table, cookie)
     
     cookie = cookie:match("PANDA_ID=(.+)")
     if cookie ~= nil and table[cookie] ~= nil then
-        return true
+        return true, cookie
     end
 
     return false
@@ -98,16 +83,16 @@ function helper.cookie(len)
     return val
 end
 
-function helper.okResponse(body, content_type, cookie)
+function helper.okHeader(content_type, max_age, cookie)
     content_type = content_type or "text/html"
+    max_age = max_age or 0
     if cookie then
         cookie = "\r\nSet-Cookie: PANDA_ID=" .. cookie
     else
         cookie = ""
     end
-    body = body or "OK"
-    local response = "HTTP/1.0 200 OK\r\nContent-Type: %s%s\r\n\r\n%s"
-    response = string.format(response, content_type, cookie, body)
+    local response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Type: %s\r\nCache-Control: max-age=%s%s\r\n\r\n"
+    response = string.format(response, content_type, max_age, cookie)
     return response
 end
 
@@ -117,7 +102,7 @@ function helper.redirectResponse(url, cookie)
     else
         cookie = ""
     end
-    local response = "HTTP/1.0 301 Moved Permanently\r\nLocation: %s%s\r\n\r\n"
+    local response = "HTTP/1.0 302 Moved Temporarily\r\nLocation: %s%s\r\n\r\n"
     response = string.format(response, url, cookie)
     return response
 end

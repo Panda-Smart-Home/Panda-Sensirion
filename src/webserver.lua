@@ -15,7 +15,7 @@ denny_list["config.json"] = true
 
 local routes = {}
 
-local function tryFileResponse(uri)
+local function tryFileResponse(uri, conn)
     -- get file name
     local filename = uri:match("/(.-)%?.*") or uri:match("/(.+)")
     if filename == nil then
@@ -27,9 +27,8 @@ local function tryFileResponse(uri)
     if denny_list[filename] then
         return helper.badRequestResponse()
     end
-    -- return file content
-    local content = helper.getFile(filename)
-    if content ~= nil then
+    -- send file content
+    if file.exists(filename) then
         -- for css or js file
         local type = "text/html"
         if filename:find(".css") ~= nil then
@@ -37,25 +36,35 @@ local function tryFileResponse(uri)
         elseif filename:find(".js") ~= nil then
             type = "application/javascript"
         end
-
-        return helper.okResponse(content, type)
+        local fd = file.open(filename, "r")
+        local send_part = function (conn)
+            local part = fd:read(512)
+            if part ~= nil then
+                conn:send(part)
+            else
+                conn:close()
+            end
+        end
+        conn:on("sent", send_part)
+        conn:send(helper.okHeader(type))
+        return nil
     end
     -- error response
     helper.log("file not found or can not read:" .. filename)
     return helper.notFoundResponse()
 end
 
-local function routing(method, uri, headers, body)
+local function routing(method, uri, headers, body, conn)
     helper.log("Routing ...")
     helper.log(method, uri, headers)
     helper.log(body)
     for k, route in pairs(routes) do
         if method == route.method and uri == route.uri then
-            return route.action(headers, body)
+            return route.action(headers, body, conn)
         end
     end
     if method == "GET" then
-        return tryFileResponse(uri)
+        return tryFileResponse(uri, conn)
     end
     return helper.notFoundResponse()
 end
@@ -94,7 +103,11 @@ local onReceive = function(conn, playload)
     -- free headers
     headers = nil
     -- send response from routing
-    conn:send(routing(method, uri, headers_table, body), function (c) c:close() end)
+    local response = routing(method, uri, headers_table, body, conn)
+    -- for short response
+    if response ~= nil then
+        conn:send(response, function (c) c:close() end)
+    end
 end
 
 function webserver.start()

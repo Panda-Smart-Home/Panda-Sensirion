@@ -3,9 +3,53 @@ local cookie_table = {}
 webserver.clearRoutes()
 
 webserver.addRoute("GET", "/",
-    function (headers, body)
+    function (headers, body, conn)
         if helper.isLogin(cookie_table, headers["Cookie"]) then
-            return helper.okResponse(helper.getFile("manage.html"))
+            local config = helper.getConfig();
+            local time = "0"
+            local switch = ""
+            local info = {
+                config.id,
+                config.name,
+                config.chip,
+                switch,
+                time,
+                config.ap.ssid,
+                config.ap.hidden,
+                config.sta.ssid,
+                config.master,
+                config.username
+            }
+            local fd = file.open("manage.html", "r")
+            local rep = table.remove(info, 1)
+            local s = 0
+            local send_line = function (conn)
+                local line = fd:readline()
+                if line ~= nil then
+                    if #info > 0 or rep ~= nil then
+                        line, s = line:gsub("%$", rep)
+                        if s > 0 then 
+                            rep = table.remove(info, 1)
+                        end
+                    end
+                    conn:send(line)
+                else
+                    conn:close()
+                end
+            end
+            conn:on("sent", send_line)
+            conn:send(helper.okHeader())
+            return nil
+        end
+        return helper.redirectResponse("http://192.168.1.1/login.html")
+    end
+)
+
+webserver.addRoute("GET", "/logout",
+    function (headers, body)
+        status, cookie = helper.isLogin(cookie_table, headers["Cookie"])
+        if cookie ~= nil then
+            cookie_table[cookie] = nil
         end
         return helper.redirectResponse("http://192.168.1.1/login.html")
     end

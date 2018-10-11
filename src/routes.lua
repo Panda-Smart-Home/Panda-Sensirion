@@ -1,10 +1,8 @@
-local cookie_table = {}
-
 webserver.clearRoutes()
 
 webserver.addRoute("GET", "/",
     function (headers, body, conn)
-        if helper.isLogin(cookie_table, headers["Cookie"]) then
+        if helper.isLogin(headers["Cookie"]) then
             local config = helper.getConfig();
             local time = "0"
             local switch = ""
@@ -47,9 +45,9 @@ webserver.addRoute("GET", "/",
 
 webserver.addRoute("GET", "/logout",
     function (headers, body)
-        status, cookie = helper.isLogin(cookie_table, headers["Cookie"])
+        status, cookie = helper.isLogin(headers["Cookie"])
         if cookie ~= nil then
-            cookie_table[cookie] = nil
+            helper.clearCookie(cookie)
         end
         return helper.redirectResponse("http://192.168.1.1/login.html")
     end
@@ -67,9 +65,8 @@ webserver.addRoute("POST", "/login",
         local password = helper.getConfig().password
 
         if username == input_username and password == input_password then
-            local cookie = helper.cookie()
+            local cookie = helper.setCookie()
             helper.log("set cookie: " .. cookie)
-            cookie_table[cookie] = 60
             return helper.redirectResponse("http://192.168.1.1/", cookie)
         end
 

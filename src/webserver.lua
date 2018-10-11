@@ -31,10 +31,13 @@ local function tryFileResponse(uri, conn)
     if file.exists(filename) then
         -- for css or js file
         local type = "text/html"
+        local max_age = "0"
         if filename:find(".css") ~= nil then
             type = "text/css"
+            max_age = "3600"
         elseif filename:find(".js") ~= nil then
             type = "application/javascript"
+            max_age = "3600"
         end
         local fd = file.open(filename, "r")
         local send_part = function (conn)
@@ -46,7 +49,7 @@ local function tryFileResponse(uri, conn)
             end
         end
         conn:on("sent", send_part)
-        conn:send(helper.okHeader(type))
+        conn:send(helper.okHeader(type, max_age))
         return nil
     end
     -- error response
@@ -80,7 +83,7 @@ local onReceive = function(conn, playload)
     local headers_end = playload:find("\r\n\r\n")
 
     if request_end == nil or headers_end == nil then
-        conn:send(helper.badRequestResponse, function (c) c:close() end)
+        conn:send(helper.badRequestResponse, helper.closeConn)
         return nil
     end
 
@@ -106,7 +109,7 @@ local onReceive = function(conn, playload)
     local response = routing(method, uri, headers_table, body, conn)
     -- for short response
     if response ~= nil then
-        conn:send(response, function (c) c:close() end)
+        conn:send(response, helper.closeConn)
     end
 end
 

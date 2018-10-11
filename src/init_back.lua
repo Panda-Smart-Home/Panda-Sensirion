@@ -1,17 +1,18 @@
 require("helper")
 require("webserver")
 require("ap")
-
--- require routes
-dofile("routes.lua")
 -- set wifi mode
 wifi.setmode(wifi.STATIONAP)
 -- set egc mode
 node.egc.setmode(node.egc.ALWAYS, 4096)
 
+-- require routes
+dofile("routes.lua")
+
 --set timer id and ms for each moudle
 tmr_tab = {}
-tmr_tab.ap = {id=0, ms=3000}
+tmr_tab.ap     = {id=0, ms=3000}
+tmr_tab.cookie = {id=1, ms=60000}
 
 -- set ap timer, it will run forever until ap setup success
 ap.setTimerId(tmr_tab.ap.id)
@@ -20,6 +21,14 @@ tmr.alarm(
     tmr_tab.ap.ms,
     tmr.ALARM_AUTO,
     ap.setup
+)
+
+-- set cookie timer
+tmr.alarm(
+    tmr_tab.cookie.id,
+    tmr_tab.cookie.ms,
+    tmr.ALARM_AUTO,
+    helper.cookieTimer
 )
 
 ap_clients = {}

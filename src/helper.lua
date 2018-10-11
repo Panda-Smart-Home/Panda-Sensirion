@@ -2,6 +2,8 @@ helper = {}
 
 local config = nil
 
+local cookie_table = {}
+
 function helper.getConfig(from_file)
     from_file = from_file or false
 
@@ -54,25 +56,40 @@ function helper.log(...)
                 print(k, v)
             end
         else
-            print("mem: " .. tostring(node.heap()) .. " | " .. info)
+            print(info)
         end
     end
 end
 
-function helper.isLogin(table, cookie)
+function helper.isLogin(cookie)
     if cookie == nil then
         return false
     end
     
     cookie = cookie:match("PANDA_ID=(.+)")
-    if cookie ~= nil and table[cookie] ~= nil then
+    if cookie ~= nil and cookie_table[cookie] ~= nil then
         return true, cookie
     end
 
     return false
 end
 
-function helper.cookie(len)
+function helper.cookieTimer()
+    for i, v in pairs(cookie_table) do
+        if cookie_table[i] == 0 then
+            cookie_table[i] = nil
+            helper.log("clear cookie: " .. i)
+            return
+        end
+        cookie_table[i] = cookie_table[i] - 1;
+    end
+end
+
+function helper.clearCookie(cookie)
+    cookie_table[cookie] = nil
+end
+
+function helper.setCookie(len)
     len = len or 32
 
     local val = ""
@@ -80,12 +97,18 @@ function helper.cookie(len)
         val = val .. string.char(node.random(65, 90))
     end
 
+    cookie_table[val] = 60
+
     return val
+end
+
+function helper.closeConn(conn)
+    conn:close()
 end
 
 function helper.okHeader(content_type, max_age, cookie)
     content_type = content_type or "text/html"
-    max_age = max_age or 0
+    max_age = max_age or "0"
     if cookie then
         cookie = "\r\nSet-Cookie: PANDA_ID=" .. cookie
     else

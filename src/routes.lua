@@ -6,6 +6,10 @@ webserver.addRoute("GET", "/",
             local config = helper.getConfig();
             local time = "0"
             local switch = ""
+            local hidden = ""
+            if config.ap.hidden then
+                hidden = "checked"
+            end
             local info = {
                 config.id,
                 config.name,
@@ -13,7 +17,7 @@ webserver.addRoute("GET", "/",
                 switch,
                 time,
                 config.ap.ssid,
-                config.ap.hidden,
+                hidden,
                 config.sta.ssid,
                 config.master,
                 config.username
@@ -59,7 +63,6 @@ webserver.addRoute("POST", "/login",
         local input_password
         
         input_username, input_password = body:match("username=([^%s]+)&password=([^%s]+)")
-        helper.log("username: " .. input_username .. " password: " .. input_password)
 
         local username = helper.getConfig().username
         local password = helper.getConfig().password
@@ -71,5 +74,40 @@ webserver.addRoute("POST", "/login",
         end
 
         return helper.redirectResponse("http://192.168.1.1/login.html?status=fail")
+    end
+)
+
+webserver.addRoute("POST", "/config/ap",
+    function (headers, body)
+        if not helper.isLogin(headers["Cookie"]) then
+            return helper.badRequestResponse()
+        end
+
+        local ssid
+        local pwd
+        local hidden
+        ssid, pwd = body:match("ssid=([^%s]+)&pwd=([^%s&]+)")
+        hidden = body:match("[^%s]+&hidden=([^%s]+)")
+        if hidden ~= "on" then
+            hidden = false
+        else
+            hidden = true
+        end
+        helper.log("ap ssid: " .. ssid .. " pwd: " .. pwd .. " hidden: ")
+        helper.log(hidden)
+
+        if helper.minString(ssid) and helper.minString(pwd, 8) then
+            local config = helper.getConfig()
+            config.ap["ssid"]   = ssid
+            config.ap["pwd"]    = pwd
+            config.ap["hidden"] = hidden
+            
+            if helper.setConfig(config) then
+                tmr.start(tmr_tab.ap.id)
+                return helper.redirectResponse("http://192.168.1.1/?ap=ok")
+            end
+        end
+
+        return helper.redirectResponse("http://192.168.1.1/?ap=fail")
     end
 )

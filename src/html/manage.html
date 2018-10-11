@@ -31,14 +31,14 @@
         </div>
         <div class="card">
             <h2>设备 WIFI</h2>
-            <form action="http://baidu.com/config/ap" method="POST">
+            <form action="/config/ap" method="POST">
                 <div class="form-field">
                     <label>WIFI 名称：</label>
-                    <input class="text-input" type="text" name="ssid" value="$" placeholder="名称" required>
+                    <input class="text-input" type="text" name="ssid" value="$" placeholder="名称（英文字母和数字的组合）" required>
                 </div>
                 <div class="form-field">
                     <label>WIFI 密码：</label>
-                    <input class="text-input" type="password" name="pwd" placeholder="密码" required>
+                    <input class="text-input" type="password" name="pwd" placeholder="密码（英文字母和数字的组合，最低八位）" required>
                 </div>
                 <div class="form-field" style="position: relative;">
                     <label for="hidden" class="checkbox-label">隐藏 WIFI：</label>

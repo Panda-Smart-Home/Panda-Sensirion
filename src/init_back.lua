@@ -6,9 +6,6 @@ wifi.setmode(wifi.STATIONAP)
 -- set egc mode
 node.egc.setmode(node.egc.ALWAYS, 4096)
 
--- require routes
-dofile("routes.lua")
-
 --set timer id and ms for each moudle
 tmr_tab = {}
 tmr_tab.ap     = {id=0, ms=3000}
@@ -30,6 +27,9 @@ tmr.alarm(
     tmr.ALARM_AUTO,
     helper.cookieTimer
 )
+
+-- require routes
+dofile("routes.lua")
 
 ap_clients = {}
 

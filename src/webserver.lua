@@ -17,7 +17,7 @@ local routes = {}
 
 local function tryFileResponse(uri, conn)
     -- get file name
-    local filename = uri:match("/(.-)%?.*") or uri:match("/(.+)")
+    local filename = uri:sub(2)
     if filename == nil then
         return helper.notFoundResponse()
     end
@@ -94,6 +94,8 @@ local onReceive = function(conn, playload)
     playload = nil
 
     method, uri, version = request:match("([^%s]+) ([^%s]+) ([^%s]+)")
+    --uri without query string
+    uri = uri:match("(.-)%?.*") or uri
     -- get header value to headers_table
     for line in headers:gmatch("(.-)\r\n") do
         local key

@@ -43,7 +43,7 @@ button {
     border: none;
     border-radius: 2px;
     background: #f2f2f2;
-    height: 100%;
+    height: 36px;
 }
 .text-input:focus {
     outline: none;
@@ -97,7 +97,6 @@ button {
 }
 .form-field {
     padding: 12px;
-    height: 60px;
 }
 .logout {
     background: #499620;

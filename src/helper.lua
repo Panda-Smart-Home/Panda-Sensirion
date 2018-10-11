@@ -48,6 +48,14 @@ function helper.setConfig(config)
     return nil
 end
 
+function helper.minString(str, len)
+    len = len or 1
+    if type(str) == "string" and #str >= len then
+        return true
+    end
+    return false
+end
+
 function helper.log(...)
     for i, info in ipairs{...} do
         local info_type = type(info)

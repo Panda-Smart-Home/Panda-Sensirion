@@ -39,3 +39,15 @@ function clickSwitch(id) {
 function logout() {
     window.location.href = "http://192.168.1.1/logout"
 }
+function GetQueryString(name)
+{
+    var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+    var r = window.location.search.substr(1).match(reg);
+    if (r != null) return unescape(r[2]); 
+    return null;
+}
+if (GetQueryString("ap") === "fail") {
+    alert("设置设备 WIFI 出错，请检查输入是否正确（合法的WIFI名称和密码）！后重试");
+} else if (GetQueryString("ap") === "ok") {
+    alert("设置成功！设备 WIFI 将会重启，请重新连接设备 WIFI。");
+}

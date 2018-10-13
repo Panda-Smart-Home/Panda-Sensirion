@@ -31,14 +31,14 @@
         </div>
         <div class="card">
             <h2>设备 WIFI</h2>
-            <form action="/config/ap" method="POST">
+            <form action="/config/ap" method="POST" onsubmit="return changeAp()">
                 <div class="form-field">
                     <label>WIFI 名称：</label>
-                    <input class="text-input" type="text" name="ssid" value="$" placeholder="名称（英文字母和数字的组合）" required>
+                    <input id="ap-ssid" class="text-input" type="text" name="ssid" value="$" placeholder="名称（纯英文或数字）" required>
                 </div>
                 <div class="form-field">
                     <label>WIFI 密码：</label>
-                    <input class="text-input" type="password" name="pwd" placeholder="密码（英文字母和数字的组合，最低八位）" required>
+                    <input id="ap-pwd" class="text-input" type="password" name="pwd" placeholder="密码（最低八位,纯英文或数字）" required>
                 </div>
                 <div class="form-field" style="position: relative;">
                     <label for="hidden" class="checkbox-label">隐藏 WIFI：</label>
@@ -68,22 +68,22 @@
         </div>
         <div class="card">
             <h2>登录用户</h2>
-            <form action="/config/user" method="POST">
+            <form action="/config/user" method="POST" onsubmit="return changeUser()">
                 <div class="form-field">
                     <label>原用户：</label>
-                    <input class="text-input" type="text" name="old_username" value="$" placeholder="原用户名" required>
+                    <input id="old-username" class="text-input" type="text" name="old_username" value="$" placeholder="原用户名" required>
                 </div>
                 <div class="form-field">
                     <label>原密码：</label>
-                    <input class="text-input" type="password" name="old_password" placeholder="原密码" required>
+                    <input id="old-password" class="text-input" type="password" name="old_password" placeholder="原密码" required>
                 </div>
                 <div class="form-field">
                     <label>新用户：</label>
-                    <input class="text-input" type="text" name="new_username" placeholder="新用户名" required>
+                    <input id="new-username" class="text-input" type="text" name="new_username" placeholder="新用户名" required>
                 </div>
                 <div class="form-field">
-                    <label>原密码：</label>
-                    <input class="text-input" type="password" name="new_password" placeholder="新密码" required>
+                    <label>新密码：</label>
+                    <input id="new-password" class="text-input" type="password" name="new_password" placeholder="新密码" required>
                 </div>
                 <button>保存</button>
             </form>

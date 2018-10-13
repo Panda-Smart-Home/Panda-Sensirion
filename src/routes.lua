@@ -111,3 +111,35 @@ webserver.addRoute("POST", "/config/ap",
         return helper.redirectResponse("http://192.168.1.1/?ap=fail")
     end
 )
+
+webserver.addRoute("POST", "/config/user",
+    function (headers, body)
+        if not helper.isLogin(headers["Cookie"]) then
+            return helper.badRequestResponse()
+        end
+
+        local old_username
+        local old_password
+        local new_username
+        local new_password
+
+        old_username, old_password, new_username, new_password = body:match("old_username=([^%s]+)&old_password=([^%s]+)&new_username=([^%s]+)&new_password=([^%s]+)")
+        if (old_username ~= helper.getConfig().username) 
+            or (old_password ~= helper.getConfig().password) 
+            or not helper.minString(new_username)
+            or not helper.minString(new_password, 8)
+        then
+            return helper.redirectResponse("http://192.168.1.1/?user=fail")
+        end
+
+        helper.log("new username: " .. new_username .. " new_password: " .. new_password)
+
+        local config = helper.getConfig()
+        config.username = new_username
+        config.password = new_password
+        if helper.setConfig(config) then
+            return helper.redirectResponse("http://192.168.1.1/?user=ok")
+        end
+        return helper.redirectResponse("http://192.168.1.1/?user=fail")
+    end
+)

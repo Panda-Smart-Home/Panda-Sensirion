@@ -43,6 +43,8 @@ button {
     border: none;
     border-radius: 2px;
     background: #f2f2f2;
+    width: 100%;
+    max-width: 240px;
     height: 36px;
 }
 .text-input:focus {

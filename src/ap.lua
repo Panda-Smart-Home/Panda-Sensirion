@@ -2,7 +2,7 @@ require("helper")
 
 ap = {}
 
-local tmr_id = nil
+local tmr_id = 0
 
 local function dhcp()
     wifi.ap.dhcp.stop()

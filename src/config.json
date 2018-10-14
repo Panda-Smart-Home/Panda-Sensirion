@@ -6,7 +6,7 @@
     "password": "123456",
     "master": "master",
     "ap": {
-        "ssid": "panda switch 1",
+        "ssid": "panda",
         "pwd" : "201511611426",
         "auth": 3,
         "hidden": 0

@@ -93,6 +93,11 @@ if (GetQueryString("ap") === "fail") {
 } else if (GetQueryString("ap") === "ok") {
     alert("设置成功！设备 WIFI 将会重启，请重新连接设备 WIFI。");
 }
+if (GetQueryString("sta") === "fail") {
+    alert("家庭网络设置失败！");
+} else if (GetQueryString("user") === "ok") {
+    alert("家庭网络设置成功。");
+}
 if (GetQueryString("user") === "fail") {
     alert("设置用户名密码出错，请检查原用户名密码输入是否正确！");
 } else if (GetQueryString("user") === "ok") {

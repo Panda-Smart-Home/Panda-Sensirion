@@ -1,3 +1,5 @@
-﻿固件版本 NodeMCU 2.2.1
+固件版本 NodeMCU 2.2.1
 包含模块：
-    crypto, encoder, file, gpio, http, mdns, net, node, sjson, tmr, uart, wifi
+    crypto, file, gpio, net, node, sjson, tmr, uart, wifi
+烧录命令：
+esptool.py --port COM5 write_flash -fm dio 0x00000 nodemcu-master-9-modules-integer.bin

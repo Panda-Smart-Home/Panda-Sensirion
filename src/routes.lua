@@ -112,6 +112,33 @@ webserver.addRoute("POST", "/config/ap",
     end
 )
 
+webserver.addRoute("POST", "/config/sta",
+    function (headers, body)
+        if not helper.isLogin(headers["Cookie"]) then
+            return helper.badRequestResponse()
+        end
+
+        local ssid
+        local pwd
+        local mac
+        ssid, pwd, mac = body:match("ssid=([^%s]+)&pwd=([^%s&]+)&mac=([^%s]+)")
+        helper.log("sta ssid: " .. ssid .. " pwd: " .. pwd .. " mac: " .. mac)
+
+        local config = helper.getConfig()
+        config.sta["ssid"] = ssid
+        config.sta["pwd"]  = pwd
+        config["master"]   = mac
+
+        if helper.setConfig(config) then
+            sta.setChange(true)
+            tmr.start(tmr_tab.sta.id)
+            return helper.redirectResponse("http://192.168.1.1/?sta=ok")
+        end
+
+        return helper.redirectResponse("http://192.168.1.1/?sta=fail")
+    end
+)
+
 webserver.addRoute("POST", "/config/user",
     function (headers, body)
         if not helper.isLogin(headers["Cookie"]) then

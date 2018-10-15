@@ -9,7 +9,7 @@
         "ssid": "panda",
         "pwd" : "201511611426",
         "auth": 3,
-        "hidden": 0
+        "hidden": false
     },
     "sta": {
         "ssid": "325",

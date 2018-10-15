@@ -42,14 +42,3 @@ tmr.alarm(
 
 -- require routes
 dofile("routes.lua")
-
--- ap_clients = {}
-
--- ap_staconnected = function(T)
---     helper.log("AP - STATION CONNECTED" .. "\n\tMAC: " .. T.MAC .."\n\tAID: " .. T.AID)
---     ap_clients = wifi.ap.getclient()
---     helper.log("now clients:")
---     helper.log(ap_clients)
--- end
-
--- wifi.eventmon.register(wifi.eventmon.AP_STACONNECTED, ap_staconnected)

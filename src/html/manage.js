@@ -81,6 +81,15 @@ function logout() {
     window.location.href = "http://192.168.1.1/logout"
 }
 
+function reboot() {
+    if (confirm("确定重启？")) {
+        alert("请等待设备重启后，重新登录！");
+        var xhr = new XMLHttpRequest();            
+        xhr.open('GET', '/reboot', true);
+        xhr.send();
+    }
+}
+
 function GetQueryString(name)
 {
     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");

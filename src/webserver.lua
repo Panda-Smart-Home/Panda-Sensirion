@@ -8,6 +8,7 @@ local server
 local want_headers = {}
 want_headers["Host"] = true
 want_headers["Cookie"] = true
+want_headers["Content-Length"] = true
 
 -- files can't be read
 local denny_list = {}
@@ -72,8 +73,7 @@ local function routing(method, uri, headers, body, conn)
     return helper.notFoundResponse()
 end
 
-local onReceive = function(conn, playload)
-
+local parseHeader = function(conn, playload)
     local method  = nil
     local uri     = nil
     local version = nil
@@ -83,13 +83,13 @@ local onReceive = function(conn, playload)
     local headers_end = playload:find("\r\n\r\n")
 
     if request_end == nil or headers_end == nil then
-        conn:send(helper.badRequestResponse, helper.closeConn)
+        conn:send(helper.badRequestResponse(), helper.closeConn)
         return nil
     end
 
     local request = playload:sub(1, request_end - 1)
     local headers = playload:sub(request_end + 2, headers_end + 1)
-    local body    = playload:sub(headers_end+4)
+    local body    = playload:sub(headers_end+4) or ""
     -- free playload
     playload = nil
 
@@ -105,14 +105,13 @@ local onReceive = function(conn, playload)
             headers_table[key] = val
         end
     end
-    -- free headers
-    headers = nil
-    -- send response from routing
-    local response = routing(method, uri, headers_table, body, conn)
-    -- for short response
-    if response ~= nil then
-        conn:send(response, helper.closeConn)
+    
+    local body_len = 0
+    if headers_table["Content-Length"] ~= nil then
+        body_len = tonumber(headers_table["Content-Length"]) or 0
     end
+
+    return method, uri, headers_table, body, body_len
 end
 
 function webserver.start()
@@ -125,7 +124,47 @@ function webserver.start()
     server:listen(
         80,
         function(conn)
-            conn:on("receive", onReceive)
+            local isHeader = true
+            local method
+            local uri
+            local headers
+            local body = ""
+            local body_len = 0
+            local response
+            conn:on("receive",
+                function (conn, playload)
+                    if isHeader then
+                        method, uri, headers, body, body_len = parseHeader(conn, playload)
+                        -- free playload
+                        playload = nil
+                        if body_len ~= 0 and #body ~= body_len then
+                            isHeader = false
+                        else
+                            response = routing(method, uri, headers, body, conn)
+                            -- free
+                            playload = nil
+                            headers = nil
+                            body = ""
+                            if response ~= nil then
+                                conn:send(response, helper.closeConn)
+                            end
+                        end
+                    else
+                        body = body .. playload
+                        -- free playload
+                        playload = nil
+                        if #body == body_len then
+                            response = routing(method, uri, headers, body, conn)
+                            -- free
+                            headers = nil
+                            body = ""
+                            if response ~= nil then
+                                conn:send(response, helper.closeConn)
+                            end
+                        end
+                    end
+                end
+            )
         end
     )
 

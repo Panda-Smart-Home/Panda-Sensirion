@@ -61,7 +61,7 @@ webserver.addRoute("POST", "/login",
     function (headers, body)
         local input_username
         local input_password
-        
+
         input_username, input_password = body:match("username=([^%s]+)&password=([^%s]+)")
 
         local username = helper.getConfig().username
@@ -168,5 +168,28 @@ webserver.addRoute("POST", "/config/user",
             return helper.redirectResponse("http://192.168.1.1/?user=ok")
         end
         return helper.redirectResponse("http://192.168.1.1/?user=fail")
+    end
+)
+
+webserver.addRoute("GET", "/reboot",
+    function (headers, body, conn)
+        if not helper.isLogin(headers["Cookie"]) then
+            return helper.badRequestResponse()
+        end
+        conn:send(helper.okHeader() .. "OK",
+            function (conn)
+                conn:close()
+                node.restart()
+            end
+        )
+
+    end
+)
+
+webserver.addRoute("GET", "/reset",
+    function (headers, body, conn)
+        if not helper.isLogin(headers["Cookie"]) then
+            return helper.badRequestResponse()
+        end
     end
 )

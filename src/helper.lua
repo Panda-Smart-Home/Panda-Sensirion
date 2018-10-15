@@ -74,7 +74,7 @@ function helper.isLogin(cookie)
         return false
     end
     
-    cookie = cookie:match("PANDA_ID=(.+)")
+    cookie = cookie:match("PANDA_ID=(.-);") or cookie:match("PANDA_ID=(.+)")
     if cookie ~= nil and cookie_table[cookie] ~= nil then
         return true, cookie
     end

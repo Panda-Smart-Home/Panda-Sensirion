@@ -4,14 +4,20 @@ local config = nil
 
 local cookie_table = {}
 
-function helper.getConfig(from_file)
+function helper.getConfig(from_file, backup)
     from_file = from_file or false
+    backup = backup or false
 
     if config ~= nil and from_file == false then
         return config
     end
 
-    local fd = file.open("config.json", "r")
+    local fd 
+    if backup then
+        fd = file.open("config_back.json", "r")
+    else
+        fd = file.open("config.json", "r")
+    end
     if fd then
         -- read the config file content
         -- max 4096 bytes
@@ -33,7 +39,10 @@ function helper.setConfig(config)
         local json
         -- encode config table to json
         ok, json = pcall(sjson.encode, config)
-        if not ok then return nil end
+        if not ok then
+            fd:close();fd = nil
+            return nil
+        end
         -- write config json to file
         ok = fd:write(json)
         -- close file
@@ -46,6 +55,14 @@ function helper.setConfig(config)
     end
 
     return nil
+end
+
+function helper.resetConfig()
+    if helper.setConfig(helper.getConfig(true, true)) then
+        return true
+    end
+
+    return false
 end
 
 function helper.minString(str, len)

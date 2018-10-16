@@ -90,6 +90,15 @@ function reboot() {
     }
 }
 
+function reset() {
+    if (confirm("确定恢复出厂设置？这将会重置配置并重启！")) {
+        var xhr = new XMLHttpRequest();            
+        xhr.open('GET', '/reset', true);
+        xhr.send();
+        alert("请等待设备重启后，重新登录！");
+    }
+}
+
 function GetQueryString(name)
 {
     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");

@@ -74,11 +74,6 @@ local function routing(method, uri, headers, body, conn)
 end
 
 local parseHeader = function(conn, playload)
-    local method  = nil
-    local uri     = nil
-    local version = nil
-    local headers_table = {}
-
     local request_end = playload:find("\r\n")
     local headers_end = playload:find("\r\n\r\n")
 
@@ -93,14 +88,13 @@ local parseHeader = function(conn, playload)
     -- free playload
     playload = nil
 
-    method, uri, version = request:match("([^%s]+) ([^%s]+) ([^%s]+)")
+    local method, uri, version = request:match("([^%s]+) ([^%s]+) ([^%s]+)")
     --uri without query string
     uri = uri:match("(.-)%?.*") or uri
     -- get header value to headers_table
+    local headers_table = {}
     for line in headers:gmatch("(.-)\r\n") do
-        local key
-        local val
-        key, val = line:match("(.-): (.+)")
+        local key, val = line:match("(.-): (.+)")
         if key ~= nil and val ~= nil and want_headers[key] ~= nil then
             headers_table[key] = val
         end

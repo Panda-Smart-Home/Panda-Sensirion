@@ -22,22 +22,33 @@ webserver.addRoute("GET", "/",
                 config.master,
                 config.username
             }
+            -- free config
+            config = nil
             local fd = file.open("manage.html", "r")
             local rep = table.remove(info, 1)
-            local s = 0
+            local pos = 0
             local send_line = function (conn)
-                local line = fd:readline()
-                if line ~= nil then
-                    if #info > 0 or rep ~= nil then
-                        line, s = line:gsub("%$", rep)
-                        if s > 0 then 
-                            rep = table.remove(info, 1)
+                local line
+                local chunk = ""
+                for i=1, 5 do
+                    line = fd:readline()
+                    if line ~= nil then
+                        if #info > 0 or rep ~= nil then
+                            line, pos = line:gsub("%$", rep)
+                            if pos > 0 then 
+                                rep = table.remove(info, 1)
+                            end
                         end
+                        chunk = chunk .. line
+                    elseif chunk == "" then
+                        fd:close()
+                        fd = nil
+                        info = nil
+                        conn:close()
+                        return nil
                     end
-                    conn:send(line)
-                else
-                    conn:close()
                 end
+                conn:send(chunk)
             end
             conn:on("sent", send_line)
             conn:send(helper.okHeader())
@@ -159,8 +170,6 @@ webserver.addRoute("POST", "/config/user",
             return helper.redirectResponse("http://192.168.1.1/?user=fail")
         end
 
-        helper.log("new username: " .. new_username .. " new_password: " .. new_password)
-
         local config = helper.getConfig()
         config.username = new_username
         config.password = new_password
@@ -189,6 +198,16 @@ webserver.addRoute("GET", "/reboot",
 webserver.addRoute("GET", "/reset",
     function (headers, body, conn)
         if not helper.isLogin(headers["Cookie"]) then
+            return helper.badRequestResponse()
+        end
+        if helper.resetConfig() then 
+            conn:send(helper.okHeader() .. "OK",
+                function (conn)
+                    conn:close()
+                    node.restart()
+                end
+            )
+        else
             return helper.badRequestResponse()
         end
     end

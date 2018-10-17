@@ -3,6 +3,9 @@ require("ap")
 require("sta")
 require("webserver")
 
+-- set switch pin
+switch_pin = 6
+
 -- set wifi mode
 wifi.setmode(wifi.STATIONAP)
 -- set egc mode

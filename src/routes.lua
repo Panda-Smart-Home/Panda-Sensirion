@@ -5,6 +5,9 @@ webserver.addRoute("GET", "/", true,
         local config = helper.getConfig();
         local time = "0"
         local switch = ""
+        if gpio.read(switch_pin) == 1 then
+            switch = "checked"
+        end
         local hidden = ""
         if config.ap.hidden then
             hidden = "checked"
@@ -78,6 +81,28 @@ webserver.addRoute("POST", "/login", false,
         end
 
         return helper.redirectResponse("http://192.168.1.1/login.html?status=fail")
+    end
+)
+
+webserver.addRoute("GET", "/control/on", true,
+    function (headers, body)
+        gpio.mode(switch_pin, gpio.OUTPUT)
+        gpio.write(switch_pin, gpio.HIGH)
+        if gpio.read(switch_pin) == 1 then
+            return helper.okHeader() .. "OK"
+        end
+        return helper.badRequestResponse()
+    end
+)
+
+webserver.addRoute("GET", "/control/off", true,
+    function (headers, body)
+        gpio.mode(switch_pin, gpio.OUTPUT)
+        gpio.write(switch_pin, gpio.LOW)
+        if gpio.read(switch_pin) == 0 then
+            return helper.okHeader() .. "OK"
+        end
+        return helper.badRequestResponse()
     end
 )
 

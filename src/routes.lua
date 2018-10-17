@@ -1,66 +1,63 @@
 webserver.clearRoutes()
 
-webserver.addRoute("GET", "/",
+webserver.addRoute("GET", "/", true,
     function (headers, body, conn)
-        if helper.isLogin(headers["Cookie"]) then
-            local config = helper.getConfig();
-            local time = "0"
-            local switch = ""
-            local hidden = ""
-            if config.ap.hidden then
-                hidden = "checked"
-            end
-            local info = {
-                config.id,
-                config.name,
-                config.chip,
-                switch,
-                time,
-                config.ap.ssid,
-                hidden,
-                config.sta.ssid,
-                config.master,
-                config.username
-            }
-            -- free config
-            config = nil
-            local fd = file.open("manage.html", "r")
-            local rep = table.remove(info, 1)
-            local pos = 0
-            local send_line = function (conn)
-                local line
-                local chunk = ""
-                for i=1, 5 do
-                    line = fd:readline()
-                    if line ~= nil then
-                        if #info > 0 or rep ~= nil then
-                            line, pos = line:gsub("%$", rep)
-                            if pos > 0 then 
-                                rep = table.remove(info, 1)
-                            end
-                        end
-                        chunk = chunk .. line
-                    elseif chunk == "" then
-                        fd:close()
-                        fd = nil
-                        info = nil
-                        conn:close()
-                        return nil
-                    end
-                end
-                conn:send(chunk)
-            end
-            conn:on("sent", send_line)
-            conn:send(helper.okHeader())
-            return nil
+        local config = helper.getConfig();
+        local time = "0"
+        local switch = ""
+        local hidden = ""
+        if config.ap.hidden then
+            hidden = "checked"
         end
-        return helper.redirectResponse("http://192.168.1.1/login.html")
+        local info = {
+            config.id,
+            config.name,
+            config.chip,
+            switch,
+            time,
+            config.ap.ssid,
+            hidden,
+            config.sta.ssid,
+            config.master,
+            config.username
+        }
+        -- free config
+        config = nil
+        local fd = file.open("manage.html", "r")
+        local rep = table.remove(info, 1)
+        local pos = 0
+        local send_line = function (conn)
+            local line
+            local chunk = ""
+            for i=1, 5 do
+                line = fd:readline()
+                if line ~= nil then
+                    if #info > 0 or rep ~= nil then
+                        line, pos = line:gsub("%$", rep)
+                        if pos > 0 then 
+                            rep = table.remove(info, 1)
+                        end
+                    end
+                    chunk = chunk .. line
+                elseif chunk == "" then
+                    fd:close()
+                    fd = nil
+                    info = nil
+                    conn:close()
+                    return nil
+                end
+            end
+            conn:send(chunk)
+        end
+        conn:on("sent", send_line)
+        conn:send(helper.okHeader())
+        return nil
     end
 )
 
-webserver.addRoute("GET", "/logout",
+webserver.addRoute("GET", "/logout", false,
     function (headers, body)
-        status, cookie = helper.isLogin(headers["Cookie"])
+        local status, cookie = helper.isLogin(headers["Cookie"])
         if cookie ~= nil then
             helper.clearCookie(cookie)
         end
@@ -68,13 +65,9 @@ webserver.addRoute("GET", "/logout",
     end
 )
 
-webserver.addRoute("POST", "/login",
+webserver.addRoute("POST", "/login", false,
     function (headers, body)
-        local input_username
-        local input_password
-
-        input_username, input_password = body:match("username=([^%s]+)&password=([^%s]+)")
-
+        local input_username, input_password = body:match("username=([^%s]+)&password=([^%s]+)")
         local username = helper.getConfig().username
         local password = helper.getConfig().password
 
@@ -88,24 +81,15 @@ webserver.addRoute("POST", "/login",
     end
 )
 
-webserver.addRoute("POST", "/config/ap",
+webserver.addRoute("POST", "/config/ap", true,
     function (headers, body)
-        if not helper.isLogin(headers["Cookie"]) then
-            return helper.badRequestResponse()
-        end
-
-        local ssid
-        local pwd
-        local hidden
-        ssid, pwd = body:match("ssid=([^%s]+)&pwd=([^%s&]+)")
-        hidden = body:match("[^%s]+&hidden=([^%s]+)")
+        local ssid, pwd = body:match("ssid=([^%s]+)&pwd=([^%s&]+)")
+        local hidden = body:match("[^%s]+&hidden=([^%s]+)")
         if hidden ~= "on" then
             hidden = false
         else
             hidden = true
         end
-        helper.log("ap ssid: " .. ssid .. " pwd: " .. pwd .. " hidden: ")
-        helper.log(hidden)
 
         if helper.minString(ssid) and helper.minString(pwd, 8) then
             local config = helper.getConfig()
@@ -123,17 +107,9 @@ webserver.addRoute("POST", "/config/ap",
     end
 )
 
-webserver.addRoute("POST", "/config/sta",
+webserver.addRoute("POST", "/config/sta", true,
     function (headers, body)
-        if not helper.isLogin(headers["Cookie"]) then
-            return helper.badRequestResponse()
-        end
-
-        local ssid
-        local pwd
-        local mac
-        ssid, pwd, mac = body:match("ssid=([^%s]+)&pwd=([^%s&]+)&mac=([^%s]+)")
-        helper.log("sta ssid: " .. ssid .. " pwd: " .. pwd .. " mac: " .. mac)
+        local ssid, pwd, mac = body:match("ssid=([^%s]+)&pwd=([^%s&]+)&mac=([^%s]+)")
 
         local config = helper.getConfig()
         config.sta["ssid"] = ssid
@@ -150,20 +126,11 @@ webserver.addRoute("POST", "/config/sta",
     end
 )
 
-webserver.addRoute("POST", "/config/user",
+webserver.addRoute("POST", "/config/user", true,
     function (headers, body)
-        if not helper.isLogin(headers["Cookie"]) then
-            return helper.badRequestResponse()
-        end
-
-        local old_username
-        local old_password
-        local new_username
-        local new_password
-
-        old_username, old_password, new_username, new_password = body:match("old_username=([^%s]+)&old_password=([^%s]+)&new_username=([^%s]+)&new_password=([^%s]+)")
-        if (old_username ~= helper.getConfig().username) 
-            or (old_password ~= helper.getConfig().password) 
+        local old_username, old_password, new_username, new_password = body:match("old_username=([^%s]+)&old_password=([^%s]+)&new_username=([^%s]+)&new_password=([^%s]+)")
+        if (old_username ~= helper.getConfig().username)
+            or (old_password ~= helper.getConfig().password)
             or not helper.minString(new_username)
             or not helper.minString(new_password, 8)
         then
@@ -180,11 +147,8 @@ webserver.addRoute("POST", "/config/user",
     end
 )
 
-webserver.addRoute("GET", "/reboot",
+webserver.addRoute("GET", "/reboot", true,
     function (headers, body, conn)
-        if not helper.isLogin(headers["Cookie"]) then
-            return helper.badRequestResponse()
-        end
         conn:send(helper.okHeader() .. "OK",
             function (conn)
                 conn:close()
@@ -195,11 +159,8 @@ webserver.addRoute("GET", "/reboot",
     end
 )
 
-webserver.addRoute("GET", "/reset",
+webserver.addRoute("GET", "/reset", true,
     function (headers, body, conn)
-        if not helper.isLogin(headers["Cookie"]) then
-            return helper.badRequestResponse()
-        end
         if helper.resetConfig() then 
             conn:send(helper.okHeader() .. "OK",
                 function (conn)

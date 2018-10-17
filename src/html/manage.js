@@ -25,8 +25,12 @@ function controlSwitch() {
 
 function clickSwitch(id) {
     if (id === 'control') {
-        var xhr = new XMLHttpRequest();            
-        xhr.open('GET', '/control/on', false);
+        var xhr = new XMLHttpRequest();
+        if (!document.getElementById(id).checked) {
+            xhr.open('GET', '/control/on', false);
+        } else {
+            xhr.open('GET', '/control/off', false);
+        }
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) { 
                 document.getElementById(id).click();
@@ -83,10 +87,10 @@ function logout() {
 
 function reboot() {
     if (confirm("确定重启？")) {
-        alert("请等待设备重启后，重新登录！");
         var xhr = new XMLHttpRequest();            
         xhr.open('GET', '/reboot', true);
         xhr.send();
+        alert("请等待设备重启后，重新登录！");
     }
 }
 

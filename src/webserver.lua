@@ -13,6 +13,7 @@ want_headers["Content-Length"] = true
 -- files can't be read
 local denny_list = {}
 denny_list["config.json"] = true
+denny_list["config_back.json"] = true
 
 local routes = {}
 
@@ -64,6 +65,9 @@ local function routing(method, uri, headers, body, conn)
     helper.log(body)
     for k, route in pairs(routes) do
         if method == route.method and uri == route.uri then
+            if route.needLogin and not helper.isLogin(headers["Cookie"]) then
+                return helper.redirectResponse("http://192.168.1.1/login.html")
+            end
             return route.action(headers, body, conn)
         end
     end
@@ -182,11 +186,12 @@ function webserver.restart()
     webserver.start()
 end
 
-function webserver.addRoute(method, uri, action)
+function webserver.addRoute(method, uri, needLogin, action)
     local route = {}
-    route.method = method
-    route.uri    = uri
-    route.action = action
+    route.method    = method
+    route.uri       = uri
+    route.needLogin = needLogin
+    route.action    = action
 
     table.insert(routes, route)
 end

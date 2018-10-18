@@ -3,6 +3,9 @@ require("ap")
 require("sta")
 require("webserver")
 
+-- close a relay
+gpio.mode(7, gpio.INPUT)
+
 -- set switch pin
 switch_pin = 6
 

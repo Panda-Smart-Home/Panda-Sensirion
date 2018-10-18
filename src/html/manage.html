@@ -25,10 +25,6 @@
                 <div class="switch" onclick="clickSwitch('control')"><div id="control-switch" class="switch-block"></div></div>
                 <input id="control" class="checkbox" type="checkbox" onchange="controlSwitch()" $>
             </div>
-            <div class="form-field">
-                <label>持续时间：</label>
-                <p style="display:inline-block;">$</p>
-            </div>
         </div>
         <div class="card">
             <h2>设备 WIFI</h2>
@@ -53,16 +49,15 @@
             <h2>家庭 WIFI</h2>
             <form action="/config/sta" method="POST">
                 <div class="form-field">
+                    <p>设备 IP：$</p>
+                </div>
+                <div class="form-field">
                     <label>WIFI 名称：</label>
                     <input class="text-input" type="text" name="ssid" value="$" placeholder="名称" required>
                 </div>
                 <div class="form-field">
                     <label>WIFI 密码：</label>
                     <input class="text-input" type="password" name="pwd" placeholder="密码" required>
-                </div>
-                <div class="form-field">
-                    <label>主控 MAC：</label>
-                    <input class="text-input" type="text" name="mac" value="$" placeholder="MAC" required>
                 </div>
                 <button>保存</button>
             </form>

@@ -3,7 +3,6 @@ webserver.clearRoutes()
 webserver.addRoute("GET", "/", true,
     function (headers, body, conn)
         local config = helper.getConfig();
-        local time = "0"
         local switch = ""
         if gpio.read(switch_pin) == 1 then
             switch = "checked"
@@ -12,16 +11,16 @@ webserver.addRoute("GET", "/", true,
         if config.ap.hidden then
             hidden = "checked"
         end
+        local sta_ip = wifi.sta.getip() or "0.0.0.0"
         local info = {
             config.id,
             config.name,
             config.chip,
             switch,
-            time,
             config.ap.ssid,
             hidden,
+            sta_ip,
             config.sta.ssid,
-            config.master,
             config.username
         }
         -- free config
@@ -134,12 +133,11 @@ webserver.addRoute("POST", "/config/ap", true,
 
 webserver.addRoute("POST", "/config/sta", true,
     function (headers, body)
-        local ssid, pwd, mac = body:match("ssid=([^%s]+)&pwd=([^%s&]+)&mac=([^%s]+)")
+        local ssid, pwd = body:match("ssid=([^%s]+)&pwd=([^%s&]+)")
 
         local config = helper.getConfig()
         config.sta["ssid"] = ssid
         config.sta["pwd"]  = pwd
-        config["master"]   = mac
 
         if helper.setConfig(config) then
             sta.setChange(true)
@@ -180,7 +178,6 @@ webserver.addRoute("GET", "/reboot", true,
                 node.restart()
             end
         )
-
     end
 )
 

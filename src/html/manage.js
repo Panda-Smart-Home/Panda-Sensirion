@@ -82,7 +82,7 @@ function changeUser() {
 }
 
 function logout() {
-    window.location.href = "http://192.168.1.1/logout"
+    window.location.href = "http://192.168.26.1/logout"
 }
 
 function reboot() {

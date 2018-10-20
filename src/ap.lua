@@ -8,13 +8,13 @@ local function dhcp()
     wifi.ap.dhcp.stop()
     -- start dhcp
     local config = {}
-    config.start = "192.168.1.100"
+    config.start = "192.168.26.100"
     wifi.ap.dhcp.config(config)
     local status = wifi.ap.dhcp.start()
     if status then
         return true
     end
-    return false    
+    return false
 end
 
 function ap.setTimerId(input_tmr_id)
@@ -34,9 +34,9 @@ function ap.setup()
         helper.log("success setup ap.")
         --set ip
         status = wifi.ap.setip({
-            ip      = "192.168.1.1",
+            ip      = "192.168.26.1",
             netmask = "255.255.255.0",
-            gateway = "192.168.1.1"
+            gateway = "192.168.26.1"
         })
         -- check set ip status
         if status then

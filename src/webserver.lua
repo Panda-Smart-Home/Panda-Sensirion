@@ -66,7 +66,7 @@ local function routing(method, uri, headers, body, conn)
     for k, route in pairs(routes) do
         if method == route.method and uri == route.uri then
             if route.needLogin and not helper.isLogin(headers["Cookie"]) then
-                return helper.redirectResponse("http://192.168.1.1/login.html")
+                return helper.redirectResponse("http://192.168.26.1/login.html")
             end
             return route.action(headers, body, conn)
         end

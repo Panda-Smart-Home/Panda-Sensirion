@@ -63,7 +63,7 @@ webserver.addRoute("GET", "/logout", false,
         if cookie ~= nil then
             helper.clearCookie(cookie)
         end
-        return helper.redirectResponse("http://192.168.1.1/login.html")
+        return helper.redirectResponse("http://192.168.26.1/login.html")
     end
 )
 
@@ -76,10 +76,10 @@ webserver.addRoute("POST", "/login", false,
         if username == input_username and password == input_password then
             local cookie = helper.setCookie()
             helper.log("set cookie: " .. cookie)
-            return helper.redirectResponse("http://192.168.1.1/", cookie)
+            return helper.redirectResponse("http://192.168.26.1/", cookie)
         end
 
-        return helper.redirectResponse("http://192.168.1.1/login.html?status=fail")
+        return helper.redirectResponse("http://192.168.26.1/login.html?status=fail")
     end
 )
 
@@ -123,11 +123,11 @@ webserver.addRoute("POST", "/config/ap", true,
             
             if helper.setConfig(config) then
                 tmr.start(tmr_tab.ap.id)
-                return helper.redirectResponse("http://192.168.1.1/?ap=ok")
+                return helper.redirectResponse("http://192.168.26.1/?ap=ok")
             end
         end
 
-        return helper.redirectResponse("http://192.168.1.1/?ap=fail")
+        return helper.redirectResponse("http://192.168.26.1/?ap=fail")
     end
 )
 
@@ -142,10 +142,10 @@ webserver.addRoute("POST", "/config/sta", true,
         if helper.setConfig(config) then
             sta.setChange(true)
             tmr.start(tmr_tab.sta.id)
-            return helper.redirectResponse("http://192.168.1.1/?sta=ok")
+            return helper.redirectResponse("http://192.168.26.1/?sta=ok")
         end
 
-        return helper.redirectResponse("http://192.168.1.1/?sta=fail")
+        return helper.redirectResponse("http://192.168.26.1/?sta=fail")
     end
 )
 
@@ -157,16 +157,16 @@ webserver.addRoute("POST", "/config/user", true,
             or not helper.minString(new_username)
             or not helper.minString(new_password, 8)
         then
-            return helper.redirectResponse("http://192.168.1.1/?user=fail")
+            return helper.redirectResponse("http://192.168.26.1/?user=fail")
         end
 
         local config = helper.getConfig()
         config.username = new_username
         config.password = new_password
         if helper.setConfig(config) then
-            return helper.redirectResponse("http://192.168.1.1/?user=ok")
+            return helper.redirectResponse("http://192.168.26.1/?user=ok")
         end
-        return helper.redirectResponse("http://192.168.1.1/?user=fail")
+        return helper.redirectResponse("http://192.168.26.1/?user=fail")
     end
 )
 

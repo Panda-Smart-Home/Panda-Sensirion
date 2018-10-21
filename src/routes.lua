@@ -142,6 +142,7 @@ webserver.addRoute("POST", "/config/sta", true,
         if helper.setConfig(config) then
             sta.setChange(true)
             tmr.start(tmr_tab.sta.id)
+            udp.reset()
             return helper.redirectResponse("http://192.168.26.1/?sta=ok")
         end
 

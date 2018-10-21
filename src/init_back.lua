@@ -12,6 +12,7 @@ switch_pin = 6
 
 -- set wifi mode
 wifi.setmode(wifi.STATIONAP)
+
 -- set egc mode
 node.egc.setmode(node.egc.ALWAYS, 4096)
 
@@ -41,7 +42,7 @@ tmr.alarm(
 )
 
 -- set udp serve timer
-ap.setTimerId(tmr_tab.ap.id)
+udp.setSwitchPin(switch_pin)
 tmr.alarm(
     tmr_tab.udp.id,
     tmr_tab.udp.ms,

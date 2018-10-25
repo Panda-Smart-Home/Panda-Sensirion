@@ -1,0 +1,17 @@
+{
+    "id": "pdsw1",
+    "name": "Panda Switch",
+    "chip": "ESP 8266",
+    "username": "panda",
+    "password": "123456",
+    "ap": {
+        "ssid": "panda",
+        "pwd" : "201511611426",
+        "auth": 3,
+        "hidden": false
+    },
+    "sta": {
+        "ssid": "325",
+        "pwd": "haihua325wudi"
+    }
+}

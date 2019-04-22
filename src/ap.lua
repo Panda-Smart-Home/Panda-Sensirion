@@ -2,7 +2,7 @@ require("helper")
 
 ap = {}
 
-local tmr_id = 0
+local ap_tmr
 
 local function dhcp()
     wifi.ap.dhcp.stop()
@@ -17,8 +17,8 @@ local function dhcp()
     return false
 end
 
-function ap.setTimerId(input_tmr_id)
-    tmr_id = input_tmr_id
+function ap.setTimer(input_tmr)
+    ap_tmr = input_tmr
 end
 
 function ap.setup()
@@ -47,7 +47,9 @@ function ap.setup()
             if status then
                 helper.log("success setup dhcp.")
                 -- stop timer
-                tmr.stop(tmr_id)
+                if ap_tmr ~= nil then
+                    ap_tmr:stop()
+                end
                 -- setup web server
                 webserver.restart()
             else

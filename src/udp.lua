@@ -71,7 +71,7 @@ local function onReceive(s, playload, port, ip)
         return nil
     end
 
-    s:send(port, ip, helper.getConfig().id .. "|" .. response .. "|" .. mark)
+    s:send(9527, ip, mark .. "|" ..helper.getConfig().id .. "|" .. response)
 end
 
 function udp.reset()
@@ -95,7 +95,7 @@ function udp.setup()
         socket:on("receive", onReceive)
     end
     if master_ip == nil then
-        socket:send(9527, wifi.sta.getbroadcast(), helper.getConfig().id)
+        socket:send(9527, wifi.sta.getbroadcast(), "alive|" .. helper.getConfig().id .. "|" .. helper.getConfig().type)
     else
         live_count = live_count - 1
         if live_count == 0 then

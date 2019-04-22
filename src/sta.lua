@@ -2,12 +2,12 @@ require("helper")
 
 sta = {}
 
-local tmr_id = 1
+local sta_tmr
 
 local change = true
 
-function sta.setTimerId(input_tmr_id)
-    tmr_id = input_tmr_id
+function sta.setTimer(input_tmr)
+    sta_tmr = input_tmr
 end
 
 function sta.setChange(val)
@@ -19,7 +19,9 @@ function sta.setup()
         wifi.sta.config(helper.getConfig().sta)
         change = false
     elseif wifi.sta.getip() ~= nil then
-        tmr.stop(tmr_id)
+        if sta_tmr ~= nil then
+            sta_tmr:stop()
+        end
         helper.log("sta ip :" .. wifi.sta.getip())
     end
 end

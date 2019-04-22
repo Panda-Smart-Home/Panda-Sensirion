@@ -122,7 +122,7 @@ webserver.addRoute("POST", "/config/ap", true,
             config.ap["hidden"] = hidden
             
             if helper.setConfig(config) then
-                tmr.start(tmr_tab.ap.id)
+                tmr_tab.ap:start()
                 return helper.redirectResponse("http://192.168.26.1/?ap=ok")
             end
         end
@@ -141,7 +141,7 @@ webserver.addRoute("POST", "/config/sta", true,
 
         if helper.setConfig(config) then
             sta.setChange(true)
-            tmr.start(tmr_tab.sta.id)
+            tmr_tab.sta:start()
             udp.reset()
             return helper.redirectResponse("http://192.168.26.1/?sta=ok")
         end

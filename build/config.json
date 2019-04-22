@@ -1,6 +1,7 @@
 {
-    "id": "pdsw1",
+    "id": "1",
     "name": "Panda Switch",
+    "type": "power",
     "chip": "ESP 8266",
     "username": "panda",
     "password": "123456",

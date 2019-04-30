@@ -3,10 +3,7 @@ webserver.clearRoutes()
 webserver.addRoute("GET", "/", true,
     function (headers, body, conn)
         local config = helper.getConfig();
-        local switch = ""
-        if gpio.read(switch_pin) == 1 then
-            switch = "checked"
-        end
+        local dht = "温度：" .. dht_info.temp .. "℃<br>湿度：" .. dht_info.humi .. "％"
         local hidden = ""
         if config.ap.hidden then
             hidden = "checked"
@@ -16,7 +13,7 @@ webserver.addRoute("GET", "/", true,
             config.id,
             config.name,
             config.chip,
-            switch,
+            dht,
             config.ap.ssid,
             hidden,
             sta_ip,
@@ -80,28 +77,6 @@ webserver.addRoute("POST", "/login", false,
         end
 
         return helper.redirectResponse("http://192.168.26.1/login.html?status=fail")
-    end
-)
-
-webserver.addRoute("GET", "/control/on", true,
-    function (headers, body)
-        gpio.mode(switch_pin, gpio.OUTPUT)
-        gpio.write(switch_pin, gpio.HIGH)
-        if gpio.read(switch_pin) == 1 then
-            return helper.okHeader() .. "OK"
-        end
-        return helper.badRequestResponse()
-    end
-)
-
-webserver.addRoute("GET", "/control/off", true,
-    function (headers, body)
-        gpio.mode(switch_pin, gpio.OUTPUT)
-        gpio.write(switch_pin, gpio.LOW)
-        if gpio.read(switch_pin) == 0 then
-            return helper.okHeader() .. "OK"
-        end
-        return helper.badRequestResponse()
     end
 )
 

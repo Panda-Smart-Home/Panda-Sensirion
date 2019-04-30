@@ -4,12 +4,7 @@ udp = {}
 
 local socket = nil
 local master_ip = nil
-local switch_pin = nil
 local live_count = 3
-
-function udp.setSwitchPin(pin)
-    switch_pin = pin
-end
 
 local function onReceive(s, playload, port, ip)
     if master_ip ~= nil and ip ~= master_ip then
@@ -41,31 +36,7 @@ local function onReceive(s, playload, port, ip)
 
     elseif data == "status" then
 
-        if gpio.read(switch_pin) == 1 then
-            response = "on"
-        else
-            response = "off"
-        end
-
-    elseif data == "on" then
-
-        gpio.mode(switch_pin, gpio.OUTPUT)
-        gpio.write(switch_pin, gpio.HIGH)
-        if gpio.read(switch_pin) == 1 then
-            response = "ok"
-        else
-            response = "fail"
-        end
-
-    elseif data == "off" then
-
-        gpio.mode(switch_pin, gpio.OUTPUT)
-        gpio.write(switch_pin, gpio.LOW)
-        if gpio.read(switch_pin) == 0 then
-            response = "ok"
-        else
-            response = "fail"
-        end
+        response = dht_info.temp .. "," .. dht_info.humi
 
     else
         return nil

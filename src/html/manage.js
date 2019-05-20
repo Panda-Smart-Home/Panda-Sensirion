@@ -1,7 +1,5 @@
 var hiddenSwitchList = document.getElementById('hidden-switch').classList;
-var controlSwitchList = document.getElementById('control-switch').classList;
 hiddenSwitch();
-controlSwitch();
 
 function hiddenSwitch() {
     if (document.getElementById('hidden').checked) {
@@ -10,16 +8,6 @@ function hiddenSwitch() {
     } else {
         hiddenSwitchList.remove('on')
         hiddenSwitchList.add('off')
-    }
-}
-
-function controlSwitch() {
-    if (document.getElementById('control').checked) {
-        controlSwitchList.remove('off')
-        controlSwitchList.add('on')
-    } else {
-        controlSwitchList.remove('on')
-        controlSwitchList.add('off')
     }
 }
 

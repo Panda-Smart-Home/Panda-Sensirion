@@ -9,7 +9,7 @@ require("udp")
 require("webserver")
 
 -- set dht11 pin
-dht_pin = 4
+dht_pin = 2
 dht_info = {}
 dht_info.temp = nil
 dht_info.humi = nil
@@ -46,7 +46,7 @@ tmr_tab.sta:alarm(
 
 -- get temperature and humidity
 tmr_tab.dht:alarm(
-    1000,
+    2000,
     tmr.ALARM_AUTO,
     function()
         status, temp, humi, temp_dec, humi_dec = dht.read(dht_pin)

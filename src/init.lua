@@ -9,7 +9,7 @@ require("udp")
 require("webserver")
 
 -- set dht11 pin
-dht_pin = 4
+dht_pin = 2
 dht_info = {}
 dht_info.temp = nil
 dht_info.humi = nil
@@ -46,14 +46,14 @@ tmr_tab.sta:alarm(
 
 -- get temperature and humidity
 tmr_tab.dht:alarm(
-    1000,
+    3000,
     tmr.ALARM_AUTO,
     function()
         status, temp, humi, temp_dec, humi_dec = dht.read11(dht_pin)
         if status == dht.OK then
-            print("DHT Temperature:"..temp..";".."Humidity:"..humi)
             dht_info.temp = temp
             dht_info.humi = humi
+            print("DHT Temperature:"..dht_info.temp..";".."Humidity:"..dht_info.humi)
         elseif status == dht.ERROR_CHECKSUM then
             print( "DHT Checksum error." )
         elseif status == dht.ERROR_TIMEOUT then
